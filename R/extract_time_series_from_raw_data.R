@@ -56,8 +56,14 @@ write.table(floods_per_decade , file = "Data/floods_per_decade.csv", sep="\t", r
 write.table(floods_per_century , file = "Data/floods_per_century.csv", sep="\t", row.names=FALSE)
 
 
-# Write working data sets with NAs----
+# Create and Write working data sets with NAs----
 
+floods %>% 
+  select(varve_year, no_of_layers) %>% 
+  mutate(no_of_layers =   if_else(is.na(no_of_layers), 0, no_of_layers)) %>%
+  mutate(no_of_layers =   if_else(varve_year < 4019 | varve_year >4083, no_of_layers, NA)) -> floods_per_year_with_NA
+
+write.table(floods_per_year_with_NA , file = "Data/floods_per_year_with_NA.csv", sep="\t", row.names=FALSE)
 
 
 
