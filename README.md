@@ -6,7 +6,6 @@ Similar analyses can ce performed for other event series. Then some parameters (
 A more comprehensive model-driven analysis of this palaeoflood data set can be found in our paper:
 Witt, A., Malamud, B. D., Mangili, C., and Brauer, A.: Analysis and modelling of a 9.3 kyr palaeoflood record: correlations, clustering, and cycles, 
 Hydrol. Earth Syst. Sci., 21, 5547–5581, https://doi.org/10.5194/hess-21-5547-2017, 2017
-https://hess.copernicus.org/articles/21/5547/2017/
 
 Please cite this paper if you use my code.
 
