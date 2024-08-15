@@ -31,7 +31,7 @@ floods %>%
 floods_per_year %>% 
   mutate(varve_decade = 1+ floor((varve_year-1)/10)) %>%
   group_by(varve_decade)%>%
-     summarize(floods_per_decade = sum(no_of_layers),
+     summarize(no_of_layers = sum(no_of_layers),
                n = n() ) %>%
   ungroup() %>%
   filter(n == 10) %>%
@@ -43,7 +43,7 @@ floods_per_year %>%
 floods_per_year %>% 
   mutate(varve_century = 1 + floor((varve_year-1)/100)) %>%
   group_by(varve_century)%>%
-  summarize(floods_per_century = sum(no_of_layers), 
+  summarize(no_of_layers = sum(no_of_layers), 
             n = n()) %>%
   ungroup() %>%
   filter(n == 100) %>%
