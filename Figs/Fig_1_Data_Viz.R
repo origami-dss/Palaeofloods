@@ -30,7 +30,7 @@ floods_per_century %>%
   select(!varve_century) -> fpc
                              
 
-Floods <- bind_rows(fpj, fpd, fpc) %>%
+Floods <- bind_rows(fpy, fpd, fpc) %>%
   mutate(resolution = factor(resolution, level=c ("Yearly", "Decadal", "Centennial"))) %>%
   mutate(no_of_layers = as.integer(no_of_layers))
 
@@ -41,9 +41,11 @@ cols <- c("Yearly" = COL_EXP[2], "Decadal" = COL_EXP[3],"Centennial" = COL_EXP[4
 
 
 fpy %>%
-  ggplot(aes(x = time, y = no_of_layers, color = resolution, fill = resolution, width = W)) + 
-  geom_col(alpha=0.7, size=0.25) +  
-  annotate( 'text', x = 0, y = 3, label = "Yearly", fontface = 'bold',  size = 4.5, vjust=0, hjust=-0.2, color = COL_EXP[2]) +
+  ggplot(aes(x = time, y = no_of_layers, xmin=3000, xmax=3100, ymin=0, ymax=30000, color = resolution, fill = resolution, width = W)) + 
+  geom_col(alpha=0.7, linewidth  = 0.25) +  
+  annotate( 'text', x = 200, y = 3, label = "Yearly", fontface = 'bold',  size = 4.5, vjust = -0.2, hjust = 0, color = COL_EXP[2]) +
+  annotate( 'text', x = 5300, y = 2.6, label = "65 year gap",  size = 3.5, vjust = 0.5, hjust = 0 ) + 
+  annotate( 'segment', x = 5200, y = 2.6, xend = 4200, yend = 2.6, linewidth = 0.5, arrow = arrow(length = unit(0.25, 'cm'), angle = 22.5, type = "closed")) +
   labs(x ="Relative Age [yr]", y = " ") +
   scale_x_continuous(breaks = (0:4)*2000, limits = c(-200, 9500), expand = c(0,0)) + 
   scale_y_continuous(breaks = (0:3), labels = c("  0","  1","  2","  3"), limits=c(-0.5,3.5), expand = c(0,0)) +
@@ -58,7 +60,8 @@ fpy %>%
  
 fpd %>%
   ggplot(aes(x = time, y = no_of_layers, color = resolution, fill = resolution, width = W)) + 
-  geom_col(alpha = 0.7, size = 0.25) + 
+  geom_col(alpha = 0.7, size = 0.25) +
+  annotate( 'text', x = 200, y = 6.9, label = "Decadal", fontface = 'bold',  size = 4.5, vjust = -0.2, hjust = 0, color = COL_EXP[3]) +
   labs(x ="Relative Age [yr]", y = "No. of Floods per Time Interval") +
   scale_x_continuous(breaks = (0:4)*2000, limits = c(-200, 9500), expand = c(0,0)) + 
   scale_y_continuous(breaks = (0:3)*2, labels = c("  0"," 2","  4","  6"), limits = c(-0.5, 7.5),) + 
@@ -75,6 +78,7 @@ fpd %>%
 fpc %>%
   ggplot(aes(x = time, y = no_of_layers, color = resolution, fill = resolution, width = W)) + 
   geom_col(alpha=0.7, size=0.25) + 
+  annotate( 'text', x = 200, y = 30.5, label = "Centennial", fontface = 'bold',  size = 4.5, vjust = -0.2, hjust = 0, color = COL_EXP[4]) +
   scale_y_continuous(breaks = (0:3)*10, limits = c(-0.5, 35.5), expand = c(0,0)) +
   scale_x_continuous(limits = c(-200, 9500), expand = c(0,0), breaks = (0:4)*2000) + 
   labs(x ="Relative Age [yr]", y = " ") +
@@ -87,9 +91,9 @@ fpc %>%
         panel.grid.minor.x = element_blank(),
         legend.position = "none") -> plot_fpc_orig
 
-data_hist_fpj <- tibble(no_of_floods = 0:3, counts=tabulate(1+fpy$no_of_layers), resolution = "Yearly") 
+data_hist_fpy <- tibble(no_of_floods = 0:3, counts=tabulate(1+fpy$no_of_layers), resolution = "Yearly") 
 
-data_hist_fpj %>% 
+data_hist_fpy %>% 
   ggplot(aes(x=no_of_floods, y=counts, color = resolution, fill = resolution)) + 
   geom_bar(stat = "identity", alpha = 0.7) + 
   geom_text(aes(label = counts, y = counts , hjust = -0.2)) +
@@ -156,13 +160,20 @@ data_hist_fpc %>%
         legend.position = "none") -> plot_hist_c
 
 title <- ggdraw() +
-      draw_label( "Temporal Succession and Histograms of a 9336-Year Palaeflood Record",
+      draw_label( "Temporal Succession and Histograms of a 9336 Year Palaeflood Record",
       fontface = 'bold',
       x = 0,
       size = rel(12),
       hjust = 0) +
       theme(plot.margin = margin(0, 0, 0, 7) )
 
+
+
+rect_gap <- rectGrob(x = unit(0.338, "npc"), y = unit(0.076, "npc"),
+                     width = unit(0.005, "npc"), height = unit(0.82, "npc"),
+                     hjust = 0, vjust = 0,
+                     default.units = "npc", name = NULL,
+                     gp = gpar(fill = "skyblue4", alpha = 0.5))
 
 ggdraw() +
   draw_plot(plot_fpc_orig, x = 0.01, y = 0.01, width = 0.68, height = 0.33)  +
@@ -171,10 +182,11 @@ ggdraw() +
   draw_plot(plot_hist_c, x = 0.71, y = 0.01, width = 0.28, height = 0.33)  +
   draw_plot(plot_hist_d, x = 0.71, y = 0.36, width = 0.28, height = 0.28) +
   draw_plot(plot_hist_y, x = 0.71, y = 0.66, width = 0.28, height = 0.28) +
-  draw_plot(title, x = 0.06, y = 0.95, width = 0.94, height = 0.05) -> Fig_Data_and_Histograms
+  draw_plot(title, x = 0.06, y = 0.95, width = 0.94, height = 0.05)  +
+  draw_grob(rect_gap)-> Fig_Data_and_Histograms
+
 ggsave("Figs/Fig_Data_and_Histograms.pdf", width = 18, height = 18, units = "cm")
 
-  draw_plot(plot_hist, x = 0.71, y = 0.01, width = 0.28, height = 0.98)
 
 
 ggdraw() +
