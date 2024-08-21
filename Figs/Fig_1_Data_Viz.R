@@ -30,9 +30,9 @@ floods_per_century %>%
   select(!varve_century) -> fpc
                              
 
-Floods <- bind_rows(fpy, fpd, fpc) %>%
-  mutate(resolution = factor(resolution, level=c ("Yearly", "Decadal", "Centennial"))) %>%
-  mutate(no_of_layers = as.integer(no_of_layers))
+#Floods <- bind_rows(fpy, fpd, fpc) %>%
+#  mutate(resolution = factor(resolution, level=c ("Yearly", "Decadal", "Centennial"))) %>%
+#  mutate(no_of_layers = as.integer(no_of_layers))
 
 
 cols <- c("Yearly" = COL_EXP[2], "Decadal" = COL_EXP[3],"Centennial" = COL_EXP[4])
@@ -77,7 +77,7 @@ fpd %>%
 
 fpc %>%
   ggplot(aes(x = time, y = no_of_layers, color = resolution, fill = resolution, width = W)) + 
-  geom_col(alpha=0.7, size=0.25) + 
+  geom_col(alpha = 0.7, size = 0.25) + 
   annotate( 'text', x = 200, y = 30.5, label = "Centennial", fontface = 'bold',  size = 4.5, vjust = -0.2, hjust = 0, color = COL_EXP[4]) +
   scale_y_continuous(breaks = (0:3)*10, limits = c(-0.5, 35.5), expand = c(0,0)) +
   scale_x_continuous(limits = c(-200, 9500), expand = c(0,0), breaks = (0:4)*2000) + 
@@ -91,7 +91,14 @@ fpc %>%
         panel.grid.minor.x = element_blank(),
         legend.position = "none") -> plot_fpc_orig
 
-data_hist_fpy <- tibble(no_of_floods = 0:3, counts=tabulate(1+fpy$no_of_layers), resolution = "Yearly") 
+
+tibble_for_histogram <- function(floods_per_time_unit)
+  {
+    tibble(no_of_floods = 0:max(floods_per_time_unit, na.rm = TRUE), counts= tabulate(1+floods_per_time_unit, nbins= 1+max(floods_per_time_unit, na.rm = TRUE)))
+  }
+
+data_hist_fpy <- 
+  tibble_for_histogram(fpy$no_of_layers) %>% mutate(resolution = "Yearly")
 
 data_hist_fpy %>% 
   ggplot(aes(x=no_of_floods, y=counts, color = resolution, fill = resolution)) + 
@@ -113,7 +120,8 @@ data_hist_fpy %>%
         plot.title = element_blank(),
         legend.position = "none") -> plot_hist_y
 
-data_hist_fpd <- tibble(no_of_floods = 0:7, counts=tabulate(1+fpd$no_of_layers), resolution = "Decadal") 
+data_hist_fpd <- 
+  tibble_for_histogram(fpd$no_of_layers) %>% mutate(resolution = "Decadal")
 
 data_hist_fpd %>% 
   ggplot(aes(x=no_of_floods, y=counts, color = resolution, fill = resolution)) + 
@@ -136,7 +144,10 @@ data_hist_fpd %>%
         legend.position = "none") -> plot_hist_d
 
 
-data_hist_fpc <- tibble(no_of_floods = 2+ seq(0,30, by=5), counts=tabulate(1+floor((fpc$no_of_layers)/5)), resolution = "Centennial") 
+data_hist_fpc <- 
+  tibble_for_histogram(fpc$no_of_layers) %>% mutate(resolution = "Centennial")
+
+data_hist_fpc <- tibble(no_of_floods = 0:max(fpc$no_of_layers, na.rm = TRUE), counts=tabulate(1+fpc$no_of_layers, nbins= 1+max(fpc$no_of_layers, na.rm = TRUE)), resolution = "Centennial") 
 
 
 
@@ -168,7 +179,7 @@ title <- ggdraw() +
       theme(plot.margin = margin(0, 0, 0, 7) )
 
 
-
+## gap  indication works s far just for pdfs with a size of 18 x 18 cm
 rect_gap <- rectGrob(x = unit(0.338, "npc"), y = unit(0.076, "npc"),
                      width = unit(0.005, "npc"), height = unit(0.82, "npc"),
                      hjust = 0, vjust = 0,
