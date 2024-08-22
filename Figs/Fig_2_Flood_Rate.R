@@ -148,7 +148,7 @@ rect_gap <- rectGrob(x = unit(0.473, "npc"), y = unit(0.078, "npc"),
 ggdraw() +
   draw_plot(plot_fpc_orig, x = 0.02, y = 0.01, width = 0.97, height = 0.35)  +
   draw_plot(plot_smoothed_flood_rate, x = 0.02, y = 0.36, width = 0.97, height = 0.58) +
-  draw_plot(plot_rect_gap, x = 0.02, y = 0.01, width = 0.97, height = 0.93) +
+  draw_plot(plot_rect_gap, x = 0.02, y = 0.01, width = 0.97, height = 0.925) +
   draw_plot(title, x = 0.09, y = 0.95, width = 0.9, height = 0.05)  +
   draw_plot(y_axis_title, x = 0.01, y = 0.02, width = 0.05, height = 0.95)  
 #  draw_grob(rect_gap) -> Fig_Flood_rate
